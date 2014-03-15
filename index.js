@@ -12,12 +12,9 @@ if (!module.parent) {
   var port = process.argv[2];
   var serial = new com.SerialPort(port, {baudrate: 9600});
   // should beacon at first
-  function send (msg ) {
-    msg = msg || "send";
+  function send ( ) {
     function write (d) {
-      log.info(msg, d.length);
       serial.write(d);
-      // this.emit('data', d);
     }
     return es.through(write);
   }
