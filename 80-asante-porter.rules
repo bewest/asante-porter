@@ -3,6 +3,9 @@
 # udev detects an ftdi device, (usable with libfdti I suppose)
 # inserting  ftdio_sio module with our vendor's parameters creates a ttyUSB0
 # udev can only match one entry at a time, but this triggers additional add entries.
+ATTRS{idVendor}=="0403", ATTRS{idProduct}=="7f38", \
+  ENV{ID_MM_DEVICE_IGNORE}="1"
+
 ACTION=="add", SUBSYSTEM=="usb",                  \
   ATTR{idVendor}=="0403", ATTR{idProduct}=="7f38", \
   RUN+="/sbin/modprobe ftdi_sio vendor=0x0403 product=0x7f38"
@@ -11,11 +14,10 @@ ACTION=="add", SUBSYSTEM=="usb",                  \
 # rename to AsantePorterX where X is each connected cable/cradle starting at
 # zero.
 ACTION=="add",                                       \
-  ENV{DEVNAME}=="ttyUSB[0-9]",                        \
-  ENV{ID_MODEL_ID}=="7f38",                            \
-  ENV{ID_VENDOR_ID}=="0403",                            \
-  PROGRAM+="/usr/local/bin/asante-porter-name.sh %k %n", \
-  SYMLINK+="%c"
+  SUBSYSTEM=="tty", \
+  ATTRS{serial}=="FTX1MKWH", \
+  ATTRS{idVendor}=="0403", ATTRS{idProduct}=="7f38", \
+  SYMLINK+="ttyUSB.AsantePorter%n"
 
 # clean up, ftdi_sio can only be used once at a time
 # this allows other applications to re-use ftdi_sio
