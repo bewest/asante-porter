@@ -28,7 +28,7 @@ if (!module.parent) {
     var stream = es.pipeline(serial, driver, send( ));
     var count = 0;
     driver.on('beacon', function (vars) {
-      log.info('beacon', vars);
+      log.info('beacon', count, vars);
       if (++count > 1) {
         log.info('sending query');
         driver.query( );
@@ -49,7 +49,6 @@ if (!module.parent) {
     });
     driver.on('fetchOne', function (vars) {
       log.info('got fetchOne', vars);
-      // driver.ack(consts.acks.ack);
       log.info('sending ack', consts.acks.stop, consts.acks);
       driver.ack(consts.acks.stop);
     });
@@ -62,6 +61,7 @@ if (!module.parent) {
     });
     driver.on('disconnect', function (vars) {
       log.info('disconnect');
+      // driver.command(0x50);
     });
   });
 
