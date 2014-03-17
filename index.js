@@ -30,7 +30,7 @@ if (!module.parent) {
       log.info('beacon', vars);
       if (++count > 1) {
         log.info('sending query');
-        // driver.query( );
+        driver.query( );
         // .write(serial);
       }
     });
