@@ -11,6 +11,7 @@ if (!module.parent) {
   var com = require("serialport");
   var port = process.argv[2];
   var serial = new com.SerialPort(port, {baudrate: 9600});
+  var consts = require('./lib/constants');
   // should beacon at first
   function send ( ) {
     function write (d) {
@@ -36,6 +37,31 @@ if (!module.parent) {
     });
     driver.on('response', function (vars) {
       log.info('response', vars);
+    });
+    driver.on('query', function (vars) {
+      log.info('query',
+        vars.body.model.toString('ascii'),
+        vars.body.serial.toString('ascii'));
+      driver.fetchOne(consts.records.settings, consts.order.older, function fetched (vars) {
+        log.info("HMMMM XXX", vars);
+      });
+      // driver.disconnect( );
+    });
+    driver.on('fetchOne', function (vars) {
+      log.info('got fetchOne', vars);
+      // driver.ack(consts.acks.ack);
+      log.info('sending ack', consts.acks.stop, consts.acks);
+      driver.ack(consts.acks.stop);
+    });
+    driver.on('ack', function (vars) {
+      log.info('got ack', vars);
+      if (vars.payload.body[0] == vars.code) {
+        log.info('EOF');
+        driver.disconnect( );
+      }
+    });
+    driver.on('disconnect', function (vars) {
+      log.info('disconnect');
     });
   });
 
